@@ -1,39 +1,129 @@
-# How to fork and clone
+# Crwn Clothing Kartikey
 
-One quick note about cloning this project. If you wish to make commits and push your own code, you'll need to fork the project first. Forking allows you to have your own copy of this repository by adding a duplicate version in your own profile!
+Welcome to Crwn Clothing Kartikey, a modern, full-stack e-commerce application built using React, Redux, Firebase, and Stripe. Browse clothing items by category, add them to your cart, sign in using Email/Password or Google, and complete your purchase securely with Stripe.
 
-You can see the fork button in the top right corner of every GitHub project; click it and a copy of the project will be added to your GitHub profile under the same name as the original project.
+## Features
 
-<img width="612" alt="github fork" src="https://user-images.githubusercontent.com/10578605/157998981-4bfd1f83-825c-4664-b22d-b2c7d471dc70.png">
+- **Product Browsing:** View products organized into categories (Hats, Jackets, Sneakers, Womens, Mens).
+- **Shopping Cart:** Add/remove items, view cart dropdown, checkout page.
+- **User Authentication:** Sign up, Sign in with Email/Password, Sign in with Google, Sign out. User sessions are persisted.
+- **Secure Payments:** Integrated with Stripe for secure credit card payments.
+- **State Management:** Robust state management using Redux, with asynchronous operations handled by Redux Saga.
+- **Styling:** Component-based styling with Styled Components.
+- **Routing:** Client-side routing handled by React Router v6.
+- **Performance:** Route-based code splitting (Lazy Loading) with React Suspense.
+- **Progressive Web App (PWA):** Includes service worker for offline capabilities and caching strategies.
+- **Deployment:** Easily deployable to Netlify (includes deployment script and Netlify functions setup).
 
-After forking the project, simply clone it the way you would from the new forked project in your own GitHub repository and you can commit and push to it freely!
+## Tech Stack
 
-# After you fork and clone:
+- **Frontend:**
+  - React (v17) & React DOM
+  - TypeScript
+  - React Router (v6)
+  - Redux & React-Redux
+  - Redux Saga (for side effects)
+  - Redux Persist (for cart persistence)
+  - Reselect (for memoized selectors)
+  - Styled Components (CSS-in-JS)
+  - Axios (or Fetch API used implicitly via libraries)
+- **Backend & Services:**
+  - Firebase Authentication (Google & Email/Password)
+  - Firebase Firestore (User data, Product categories)
+  - Stripe (Payment processing)
+  - Netlify Functions (Serverless backend for Stripe integration)
+- **Build & Development:**
+  - Create React App (react-scripts v5)
+  - npm/yarn
+  - ESLint
+- **Deployment:**
+  - Netlify
+  - Git & GitHub
 
-## Install dependencies
+## Setup Instructions
 
-In your terminal after you clone your project down, remember to run either `yarn` or `npm install` to build all the dependencies in the project.
+Follow these steps to get the project running locally:
 
-## Set your firebase config
+1.  **Fork and Clone:**
 
-Remember to replace the config variable in your firebase.utils.js with your own config object from the firebase dashboard! Navigate to the project settings gear icon > project settings and scroll down to the config code. Copy the object in the code and replace the variable in your cloned code.
+    - Fork this repository to your own GitHub account using the 'Fork' button.
+    - Clone your forked repository:
+      ```bash
+      git clone https://github.com/<Your-Username>/crwn-clothing-kartikey.git
+      cd crwn-clothing-kartikey
+      ```
 
-<img width="1261" alt="Screen Shot 2022-03-11 at 8 51 22 PM" src="https://user-images.githubusercontent.com/10578605/157999158-10e921cc-9ee5-46f6-a0c5-1ae5686f54f3.png">
+2.  **Install Dependencies:**
 
-# Branching strategy
+    - Install project dependencies using npm or yarn. Note: This project might require `--legacy-peer-deps` due to potential version conflicts noted in `deploy_project.sh`.
+      ```bash
+      npm install --legacy-peer-deps
+      # OR
+      # yarn install
+      ```
 
-After forking this repository and cloning it down, you will have access to all the lesson branches with code at different checkpoints throughout the course. If for some reason you need to work from the codebase at one of these lesson branch checkpoints, follow these steps:
+3.  **Firebase Configuration:**
 
-1. Checkout to the lesson-# (let's use lesson-15 as an example) branch
+    - Create a Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/).
+    - Enable **Authentication** (Email/Password and Google providers).
+    - Enable **Firestore Database**. You might need to seed data (see `src/shop-data.js` for structure, and `src/utils/firebase/firebase.utils.ts` `addCollectionAndDocuments` function for how it might be done).
+    - Go to Project Settings > General tab > Your apps > Web app.
+    - Find your Firebase **config object**.
+    - Replace the placeholder config in `src/utils/firebase/firebase.utils.ts` with your actual Firebase config _or_ (recommended) set up environment variables:
+      - Create a `.env` file in the project root.
+      - Add your Firebase config keys:
+        ```env
+        REACT_APP_FIREBASE_API_KEY=your_api_key
+        REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
+        REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+        REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+        REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+        REACT_APP_FIREBASE_APP_ID=your_app_id
+        ```
+      - _Ensure `firebase.utils.ts` reads from `process.env` as shown in the file._
 
-```
-git checkout lesson-15
-```
+4.  **Stripe Configuration:**
 
-2. Branch off from lesson-15. This will create a new branch where the code of lesson-15 is the basis for your new branch. You can name your new branch whatever you want! Let's say we use my-main-branch as the name.
+    - Sign up for a Stripe account at [https://stripe.com/](https://stripe.com/).
+    - Find your API keys in the Stripe Dashboard (Developers > API Keys). You need both **Publishable Key** and **Secret Key**.
+    - Add your Stripe keys to the `.env` file:
 
-```
-git checkout -b my-main-branch
-```
+      ```env
+      # Used in src/utils/stripe/stripe.utils.js
+      REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key
 
-3. Now you can just code on this branch, push code from this branch up to your forked repo etc. The main thing to remember is that you want to be on this branch for your own code, so remember what you named this branch!
+      # Used in netlify/functions/create-payment-intent.js (for local Netlify Dev)
+      STRIPE_SECRET_KEY=sk_test_your_secret_key
+      ```
+
+    - Ensure `process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY` is used in `src/utils/stripe/stripe.utils.js`.
+    - Ensure `process.env.STRIPE_SECRET_KEY` is used in `netlify/functions/create-payment-intent.js`.
+
+5.  **Netlify Dev (Optional but Recommended for Testing Payments):**
+
+    - Install the Netlify CLI: `npm install -g netlify-cli`
+    - Log in: `netlify login`
+    - Link the site (optional, connects to a Netlify site): `netlify link`
+    - Run the development server with Netlify Dev (this runs your React app and the serverless function locally):
+      ```bash
+      netlify dev
+      ```
+    - This command will typically pick up your `.env` file variables.
+
+6.  **Run the Application Locally:**
+    - If not using Netlify Dev, start the React development server:
+      ```bash
+      npm start
+      # OR
+      # yarn start
+      ```
+    - Open your browser to `http://localhost:3000` (or the port specified).
+
+## Usage
+
+- Navigate through the different clothing categories via the homepage or the "SHOP" link in the navigation.
+- Click "Add to card" on product cards to add items to your shopping cart.
+- Click the cart icon in the navigation to view items in the cart dropdown.
+- Click "GO TO CHECKOUT" to proceed to the checkout page.
+- Use the "SIGN IN" link to log in or create an account (Email/Password or Google).
+- On the checkout page, enter your card details (use Stripe test card numbers) and click "Pay now" to simulate a payment.
